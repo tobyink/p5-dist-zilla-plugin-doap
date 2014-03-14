@@ -5,7 +5,7 @@ package Dist::Zilla::Plugin::DOAP;
 # ABSTRACT: create a doap.xml file for your project
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.001';
+our $VERSION   = '0.002';
 
 use Moose;
 with qw(
