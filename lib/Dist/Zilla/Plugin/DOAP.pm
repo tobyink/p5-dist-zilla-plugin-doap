@@ -16,6 +16,7 @@ use namespace::autoclean;
 use CPAN::Changes;
 use CPAN::Meta;
 use Dist::Zilla::File::InMemory;
+use Dist::Zilla::Types qw(OneZero);
 use RDF::DOAP::Lite;
 
 has xml_filename => (
@@ -29,6 +30,13 @@ has ttl_filename => (
 	isa     => 'Maybe[Str]',
 );
 
+has process_changes => (
+	is      => 'ro',
+	isa     => OneZero,
+	default => 0,
+	coerce  => 1,
+);
+
 sub gather_files
 {
 	my $self  = shift;
@@ -36,7 +44,7 @@ sub gather_files
 	my $zilla = $self->zilla;
 	my $doap  = 'RDF::DOAP::Lite'->new(
 		meta => 'CPAN::Meta'->new( {%{$zilla->distmeta}} ),
-		((-f 'Changes')
+		(($self->process_changes and -f 'Changes')
 			? (changes => 'CPAN::Changes'->load('Changes'))
 			: ()),
 	);
@@ -117,7 +125,7 @@ Index. >>
 
 =head2 Configuration
 
-This plugin has two settings that you can tweak in your C<dist.ini> file:
+This plugin has three settings that you can tweak in your C<dist.ini> file:
 
 =over
 
@@ -131,6 +139,11 @@ Set this to the empty string to disable XML output.
 The filename for DOAP output, serialized in the slightly more readable
 Turtle format. Defaults to undef. Set this to a filename to output some
 Turtle.
+
+=item C<< process_changes >>
+
+A boolean indicating whether your C<Changes> file should be processed
+to generate a release history. Defaults to 0 (no).
 
 =back
 
